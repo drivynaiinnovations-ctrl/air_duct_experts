@@ -66,9 +66,21 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
   return brandedErrorResponse();
 }
 
+const CANONICAL_HOST = "getairductexperts.com";
+
+function wwwRedirectResponse(request: Request): Response | null {
+  const url = new URL(request.url);
+  if (url.hostname !== `www.${CANONICAL_HOST}`) return null;
+  url.hostname = CANONICAL_HOST;
+  return Response.redirect(url.toString(), 301);
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const redirect = wwwRedirectResponse(request);
+      if (redirect) return redirect;
+
       const cf = (request as unknown as { cf?: { city?: string; regionCode?: string } }).cf;
       let handlerRequest = request;
       if (cf?.city) {
