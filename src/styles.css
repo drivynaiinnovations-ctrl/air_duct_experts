@@ -1,0 +1,169 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-display: "Hubot Sans", system-ui, sans-serif;
+  --font-sans: "Hubot Sans", system-ui, sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Air Duct Experts brand tokens */
+  --color-navy: var(--navy);
+  --color-navy-soft: var(--navy-soft);
+  --color-ade-blue: var(--ade-blue);
+  --color-ade-blue-glow: var(--ade-blue-glow);
+  --color-silver: var(--silver);
+
+  /* Two supporting accents — used sparingly alongside ADE Blue so the
+     palette has room to breathe (per-service color coding, badges, signs) */
+  --color-teal: var(--teal);
+  --color-teal-glow: var(--teal-glow);
+  --color-amber: var(--amber);
+  --color-amber-glow: var(--amber-glow);
+
+  --shadow-luxe: 0 30px 80px -30px color-mix(in oklab, var(--navy) 45%, transparent);
+  --shadow-blue: 0 20px 60px -20px color-mix(in oklab, var(--ade-blue) 55%, transparent);
+  --shadow-teal: 0 20px 60px -20px color-mix(in oklab, var(--teal) 55%, transparent);
+  --shadow-amber: 0 20px 60px -20px color-mix(in oklab, var(--amber) 55%, transparent);
+}
+
+:root {
+  --radius: 0.75rem;
+
+  --background: #ffffff;
+  --foreground: #0f2137;
+
+  /* Brand: Deep Navy / ADE Blue / Silver Gray */
+  --navy: #0b1d33;
+  --navy-soft: #14304f;
+  --ade-blue: #2e6ff2;
+  --ade-blue-glow: #6ea0ff;
+  --silver: #94a3b8;
+
+  /* Supporting accents: teal (freshness / air quality) & amber (warmth / dryer heat) */
+  --teal: #12a594;
+  --teal-glow: #4fd1c5;
+  --amber: #f2a93b;
+  --amber-glow: #ffcb73;
+
+  --card: #ffffff;
+  --card-foreground: #0f2137;
+  --popover: #ffffff;
+  --popover-foreground: #0f2137;
+
+  --primary: var(--ade-blue);
+  --primary-foreground: #ffffff;
+  --secondary: #f2f5f9;
+  --secondary-foreground: var(--navy);
+  --muted: #f2f5f9;
+  --muted-foreground: #5c6b7d;
+  --accent: #e8f0ff;
+  --accent-foreground: var(--navy);
+  --destructive: oklch(0.6 0.22 25);
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: var(--ade-blue);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
+}
+
+@layer utilities {
+  .text-navy { color: var(--navy); }
+  .text-ade-blue { color: var(--ade-blue); }
+  .text-silver { color: var(--silver); }
+  .text-teal { color: var(--teal); }
+  .text-amber { color: var(--amber); }
+  .bg-navy { background-color: var(--navy); }
+  .bg-navy-soft { background-color: var(--navy-soft); }
+  .bg-ade-blue { background-color: var(--ade-blue); }
+  .bg-teal { background-color: var(--teal); }
+  .bg-amber { background-color: var(--amber); }
+  .border-navy { border-color: var(--navy); }
+  .border-ade-blue { border-color: var(--ade-blue); }
+  .border-teal { border-color: var(--teal); }
+  .border-amber { border-color: var(--amber); }
+  .shadow-luxe { box-shadow: var(--shadow-luxe); }
+  .shadow-blue { box-shadow: var(--shadow-blue); }
+  .shadow-teal { box-shadow: var(--shadow-teal); }
+  .shadow-amber { box-shadow: var(--shadow-amber); }
+
+  .pulse-ring {
+    position: relative;
+  }
+  .pulse-ring::before,
+  .pulse-ring::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 2px solid var(--ade-blue);
+    animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    pointer-events: none;
+  }
+  .pulse-ring::after { animation-delay: 1s; }
+
+  @keyframes pulse-ring {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .reveal.in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .animate-float { animation: float-slow 4s ease-in-out infinite; }
+
+  @keyframes airflow {
+    0% { stroke-dashoffset: 24; }
+    100% { stroke-dashoffset: 0; }
+  }
+  .animate-airflow path { animation: airflow 1.6s linear infinite; }
+}
