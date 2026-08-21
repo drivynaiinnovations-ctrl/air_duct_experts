@@ -8,6 +8,7 @@ import { Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/site/Reveal";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
+import { HeroSlider } from "@/components/site/HeroSlider";
 import { SERVICE_ACCENT, accentIconBg, accentText, accentHoverBorder, type ServiceAccent } from "@/lib/serviceAccent";
 import { BLOG_POSTS } from "@/lib/blogPosts";
 
@@ -84,7 +85,7 @@ function Index() {
     <div className="min-h-screen bg-background text-navy">
       <HomeSchema />
       <SiteHeader />
-      <Hero />
+      <HeroSlider />
       <TrustBar />
       <NotJustVents />
       <EstimateWidget />
@@ -135,98 +136,6 @@ function FromTheBlog() {
         </div>
       </div>
     </section>
-  );
-}
-
-// ── Decorative airflow illustration (no stock photography yet) ──────────────
-function DuctIllustration() {
-  return (
-    <svg viewBox="0 0 480 420" className="w-full h-auto max-w-md mx-auto" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect x="60" y="40" width="200" height="70" rx="10" fill="var(--navy-soft)" stroke="var(--ade-blue)" strokeOpacity="0.4" />
-      <g stroke="var(--ade-blue)" strokeOpacity="0.7" strokeWidth="2">
-        {[0, 1, 2, 3, 4].map((i) => (
-          <line key={i} x1={75 + i * 38} y1="55" x2={75 + i * 38} y2="95" />
-        ))}
-      </g>
-      <path d="M160 110 L160 170" stroke="var(--ade-blue)" strokeWidth="6" strokeLinecap="round" />
-      <rect x="110" y="170" width="100" height="60" rx="8" fill="var(--navy-soft)" stroke="var(--ade-blue)" strokeOpacity="0.5" />
-      <text x="160" y="206" textAnchor="middle" fontFamily="var(--font-display)" fontWeight="700" fontSize="13" fill="white">AIR HANDLER</text>
-      <path d="M210 200 C 300 200 300 260 380 260" stroke="var(--ade-blue)" strokeWidth="6" strokeLinecap="round" fill="none" className="animate-airflow" strokeDasharray="10 6" />
-      <path d="M110 200 C 40 200 40 300 110 300" stroke="var(--silver)" strokeWidth="6" strokeLinecap="round" fill="none" strokeDasharray="10 6" />
-      <rect x="350" y="235" width="70" height="50" rx="8" fill="var(--navy-soft)" stroke="var(--ade-blue)" strokeOpacity="0.5" />
-      <path d="M370 250 L400 250 M370 260 L400 260 M370 270 L400 270" stroke="var(--ade-blue)" strokeWidth="2" />
-      <rect x="70" y="290" width="70" height="50" rx="8" fill="var(--navy-soft)" stroke="var(--silver)" strokeOpacity="0.5" />
-      <path d="M90 305 L120 305 M90 315 L120 315 M90 325 L120 325" stroke="var(--silver)" strokeWidth="2" />
-    </svg>
-  );
-}
-
-function Hero() {
-  return (
-    <>
-      {/* Mobile hero — clean CTA panel, no imagery */}
-      <section className="md:hidden bg-navy px-5 py-10 flex flex-col gap-5">
-        <div>
-          <p className="text-ade-blue text-xs font-semibold tracking-[0.2em] uppercase mb-3">17 Years of Industry Experience</p>
-          <h1 className="font-display font-black text-white leading-[1.05] mb-4" style={{ fontSize: "min(11vw, 3.2rem)" }}>
-            Complete HVAC<br />System Cleaning.
-          </h1>
-          <p className="text-ade-blue-glow font-display font-bold text-xl mb-4">Not just the vents.</p>
-          <p className="text-white/70 text-base leading-relaxed">
-            Air Duct Experts cleans your entire HVAC system — ducts, blower, coil and air handler — serving homeowners across Washington DC, Maryland & Northern Virginia.
-          </p>
-        </div>
-        <div className="flex flex-col gap-3">
-          <a href="#estimate"
-            className="bg-ade-blue text-white font-semibold px-6 py-4 rounded-xl text-base flex items-center justify-center gap-2 hover:opacity-90 shadow-blue transition">
-            <Calendar className="size-5" /> Get My Estimate
-          </a>
-          <a href={`tel:${PHONE_TEL}`}
-            className="border-2 border-white/30 text-white font-semibold px-6 py-4 rounded-xl flex items-center justify-center gap-2 hover:border-ade-blue hover:text-ade-blue transition">
-            <Phone className="size-5" /> Call to Book
-          </a>
-        </div>
-      </section>
-
-      {/* Desktop hero */}
-      <section className="hidden md:block relative bg-navy overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-navy-soft/60 via-navy to-navy" />
-        <div className="relative max-w-7xl mx-auto px-5 lg:px-8 py-24 grid lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <span className="inline-flex items-center gap-2 text-ade-blue text-xs font-semibold tracking-[0.2em] uppercase mb-6">
-              <span className="size-1.5 rounded-full bg-ade-blue animate-pulse" />
-              17 Years of Industry Experience
-            </span>
-            {/* Not an <h1> — the page's single H1 lives in the mobile hero above (the section
-                Google's mobile-first indexing actually renders); this is a visual duplicate for desktop. */}
-            <p className="font-display text-5xl xl:text-6xl font-semibold text-white leading-[1.05] mb-3">
-              Complete HVAC<br />System Cleaning.
-            </p>
-            <p className="font-display text-3xl xl:text-4xl font-bold text-ade-blue-glow mb-6">Not just the vents.</p>
-            <p className="text-lg text-white/75 leading-relaxed mb-8 max-w-lg">
-              Many low-cost duct-cleaning ads only cover a limited part of the system. Air Duct Experts cleans the ducts, blower, coil and air handler — so you know exactly what you're paying for.
-            </p>
-            <div className="flex flex-wrap gap-4 mb-8">
-              <a href="#estimate"
-                className="group bg-ade-blue text-white font-semibold px-7 py-4 rounded-xl text-base flex items-center gap-2 hover:opacity-90 shadow-blue transition">
-                <Calendar className="size-5" /> Get My Estimate
-                <ArrowRight className="size-4 group-hover:translate-x-1 transition" />
-              </a>
-              <a href={`tel:${PHONE_TEL}`}
-                className="pulse-ring relative bg-transparent border-2 border-white text-white font-semibold px-7 py-4 rounded-xl flex items-center gap-2 hover:bg-white hover:text-navy transition">
-                <Phone className="size-5 text-ade-blue" /> {PHONE}
-              </a>
-            </div>
-            <div className="flex flex-wrap gap-4 text-sm text-white/70">
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="size-4 text-ade-blue" /> 17 Years Industry Experience</span>
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="size-4 text-ade-blue" /> Serving the DMV</span>
-              <span className="flex items-center gap-1.5"><Award className="size-4 text-ade-blue" /> Residential Specialists</span>
-            </div>
-          </div>
-          <DuctIllustration />
-        </div>
-      </section>
-    </>
   );
 }
 
