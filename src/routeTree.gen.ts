@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as TeamRouteImport } from './routes/team'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as LocationsSlugRouteImport } from './routes/locations/$slug'
@@ -30,6 +31,11 @@ const AboutRoute = AboutRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamRoute = TeamRouteImport.update({
+  id: '/team',
+  path: '/team',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/faq': typeof FaqRoute
+  '/team': typeof TeamRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/locations/$slug': typeof LocationsSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/faq': typeof FaqRoute
+  '/team': typeof TeamRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/locations/$slug': typeof LocationsSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/faq': typeof FaqRoute
+  '/team': typeof TeamRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/locations/$slug': typeof LocationsSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/faq'
+    | '/team'
     | '/blog/$slug'
     | '/locations/$slug'
     | '/services/$slug'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/faq'
+    | '/team'
     | '/blog/$slug'
     | '/locations/$slug'
     | '/services/$slug'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/faq'
+    | '/team'
     | '/blog/$slug'
     | '/locations/$slug'
     | '/services/$slug'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   FaqRoute: typeof FaqRoute
+  TeamRoute: typeof TeamRoute
   BlogSlugRoute: typeof BlogSlugRoute
   LocationsSlugRoute: typeof LocationsSlugRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
@@ -142,6 +155,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/team': {
+      id: '/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof TeamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/': {
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   FaqRoute: FaqRoute,
+  TeamRoute: TeamRoute,
   BlogSlugRoute: BlogSlugRoute,
   LocationsSlugRoute: LocationsSlugRoute,
   ServicesSlugRoute: ServicesSlugRoute,

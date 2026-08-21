@@ -75,11 +75,50 @@ function wwwRedirectResponse(request: Request): Response | null {
   return Response.redirect(url.toString(), 301);
 }
 
+const TEAM_AUTH_REALM = "Air Duct Experts Team";
+const TEAM_AUTH_USER = "marcus";
+
+function unauthorizedResponse(): Response {
+  return new Response("Authentication required.", {
+    status: 401,
+    headers: { "WWW-Authenticate": `Basic realm="${TEAM_AUTH_REALM}"` },
+  });
+}
+
+// Gates /team* behind HTTP Basic Auth at the edge, before the page ever renders.
+function teamAuthResponse(request: Request, env: unknown): Response | null {
+  const url = new URL(request.url);
+  if (!url.pathname.startsWith("/team")) return null;
+
+  const expectedPassword = (env as { TEAM_PASSWORD?: string } | undefined)?.TEAM_PASSWORD;
+  if (!expectedPassword) return unauthorizedResponse();
+
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader?.startsWith("Basic ")) return unauthorizedResponse();
+
+  let decoded: string;
+  try {
+    decoded = atob(authHeader.slice(6));
+  } catch {
+    return unauthorizedResponse();
+  }
+
+  const separatorIndex = decoded.indexOf(":");
+  const user = decoded.slice(0, separatorIndex);
+  const pass = decoded.slice(separatorIndex + 1);
+  if (user !== TEAM_AUTH_USER || pass !== expectedPassword) return unauthorizedResponse();
+
+  return null;
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const redirect = wwwRedirectResponse(request);
       if (redirect) return redirect;
+
+      const authRequired = teamAuthResponse(request, env);
+      if (authRequired) return authRequired;
 
       const cf = (request as unknown as { cf?: { city?: string; regionCode?: string } }).cf;
       let handlerRequest = request;
