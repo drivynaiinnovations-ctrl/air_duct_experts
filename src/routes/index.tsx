@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Phone, Calendar, Clock, Home, Building2, CheckCircle2, ArrowRight, Mail,
   Wind, Flame, Sparkles, Sofa, ShieldCheck, MapPin, X, AlertTriangle, Award, Youtube, MessageSquare,
@@ -255,14 +255,14 @@ const ADD_ONS = [
   { key: "sanitize", label: "HVAC sanitizing / deodorizing" },
 ] as const;
 
-const TIME_WINDOWS = ["Morning (8am–12pm)", "Afternoon (12pm–4pm)", "Evening (4pm–7pm)", "I'm flexible"] as const;
+const GHL_CALENDAR_SRC = "https://links.getdrivynai.com/widget/booking/KTcb2xblZJ00uP8pTPY6";
+const GHL_CALENDAR_ID = "KTcb2xblZJ00uP8pTPY6";
 
 function EstimateWidget() {
   const [selected, setSelected] = useState<string[]>(["hvac"]);
   const [zip, setZip] = useState("");
   const [addOns, setAddOns] = useState<string[]>([]);
-  const [date, setDate] = useState("");
-  const [timeWindow, setTimeWindow] = useState<string>(TIME_WINDOWS[3]);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const toggle = (key: string, list: string[], setList: (v: string[]) => void) => {
     setList(list.includes(key) ? list.filter((k) => k !== key) : [...list, key]);
@@ -278,8 +278,6 @@ function EstimateWidget() {
     zip ? `ZIP code: ${zip}` : null,
     summaryLines.services.length ? `Services: ${summaryLines.services.join(", ")}` : null,
     summaryLines.extras.length ? `Add-ons: ${summaryLines.extras.join(", ")}` : null,
-    date ? `Preferred date: ${date}` : null,
-    `Preferred time: ${timeWindow}`,
   ].filter(Boolean).join("\n");
 
   const mailBody = [requestLines, "", "Please confirm this appointment request."].join("\n");
@@ -287,6 +285,23 @@ function EstimateWidget() {
 
   const smsBody = `Hi, I'd like to request an appointment.\n${requestLines}`;
   const smsHref = `sms:${PHONE_TEL}?body=${encodeURIComponent(smsBody)}`;
+
+  const calendarNotes = [
+    summaryLines.services.length ? `Service: ${summaryLines.services.join(", ")}` : null,
+    summaryLines.extras.length ? `Add-ons: ${summaryLines.extras.join(", ")}` : null,
+    zip ? `ZIP: ${zip}` : null,
+  ].filter(Boolean).join(" | ");
+  const calendarUrl = `${GHL_CALENDAR_SRC}?notes=${encodeURIComponent(calendarNotes)}`;
+
+  useEffect(() => {
+    if (!showCalendar) return;
+    if (document.getElementById("ghl-form-embed-script")) return;
+    const script = document.createElement("script");
+    script.id = "ghl-form-embed-script";
+    script.src = "https://links.getdrivynai.com/js/form_embed.js";
+    script.type = "text/javascript";
+    document.body.appendChild(script);
+  }, [showCalendar]);
 
   return (
     <section id="estimate" className="py-20 bg-ade-blue/5 scroll-mt-16">
@@ -317,106 +332,113 @@ function EstimateWidget() {
           </Reveal>
 
           <Reveal delay={100}>
-            <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-auto">
-              <div className="flex items-center gap-3 mb-5 pb-4 border-b border-gray-100">
-                <div className="size-10 rounded-xl bg-ade-blue/10 flex items-center justify-center">
-                  <Calendar className="size-5 text-ade-blue" />
-                </div>
-                <div>
-                  <p className="font-semibold text-navy text-sm">Get My Estimate</p>
-                  <p className="text-xs text-muted-foreground">Air Duct Experts</p>
-                </div>
-              </div>
-
-              <p className="text-xs font-semibold text-navy/60 uppercase tracking-wider mb-3">Select Service(s)</p>
-              <div className="grid grid-cols-2 gap-2 mb-4">
-                {ESTIMATE_SERVICES.map((s) => {
-                  const Icon = s.icon;
-                  const active = selected.includes(s.key);
-                  return (
-                    <button key={s.key} onClick={() => toggle(s.key, selected, setSelected)}
-                      className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition text-left ${
-                        active
-                          ? "border-ade-blue bg-ade-blue/10 text-ade-blue"
-                          : "border-gray-200 text-navy hover:border-ade-blue/50 hover:bg-ade-blue/5"
-                      }`}>
-                      <Icon className="size-4 shrink-0" />
-                      <span className="leading-tight">{s.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <p className="text-xs font-semibold text-navy/60 uppercase tracking-wider mb-3">Add-Ons</p>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {ADD_ONS.map((a) => {
-                  const active = addOns.includes(a.key);
-                  return (
-                    <button key={a.key} onClick={() => toggle(a.key, addOns, setAddOns)}
-                      className={`px-3 py-1.5 rounded-full border text-xs font-medium transition ${
-                        active ? "border-ade-blue bg-ade-blue/10 text-ade-blue" : "border-gray-200 text-navy/70 hover:border-ade-blue/50"
-                      }`}>
-                      {a.label}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <label className="block text-xs font-semibold text-navy/60 uppercase tracking-wider mb-2">Home ZIP Code</label>
-              <input
-                value={zip}
-                onChange={(e) => setZip(e.target.value)}
-                placeholder="e.g. 22191"
-                maxLength={5}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm mb-4 focus:outline-none focus:border-ade-blue"
-              />
-
-              <div className="grid grid-cols-2 gap-2 mb-4">
-                <div>
-                  <label className="block text-xs font-semibold text-navy/60 uppercase tracking-wider mb-2">Preferred Date</label>
-                  <input
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ade-blue"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-navy/60 uppercase tracking-wider mb-2">Preferred Time</label>
-                  <select
-                    value={timeWindow}
-                    onChange={(e) => setTimeWindow(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ade-blue bg-white"
-                  >
-                    {TIME_WINDOWS.map((w) => <option key={w} value={w}>{w}</option>)}
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2.5">
-                <a href={smsHref}
-                  className="w-full bg-ade-blue hover:opacity-90 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition shadow-blue">
-                  <MessageSquare className="size-4" /> Text to Request This Appointment
-                </a>
-                <a href={`tel:${PHONE_TEL}`}
-                  className="w-full border border-gray-200 hover:border-ade-blue text-navy font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition">
-                  <Phone className="size-4" /> Call to Book — {PHONE}
-                </a>
-                <a href={mailtoHref}
-                  className="w-full border border-gray-200 hover:border-ade-blue text-navy font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition">
-                  <Mail className="size-4" /> Email My Details
-                </a>
-              </div>
-
-              <div className="mt-4 space-y-2">
-                {["Request — not a guaranteed slot until confirmed", "17 Years of Industry Experience", "Residential, DMV-wide"].map((item) => (
-                  <div key={item} className="flex items-center gap-2 text-xs text-navy/60">
-                    <CheckCircle2 className="size-3.5 text-ade-blue shrink-0" />
-                    <span>{item}</span>
+            {showCalendar ? (
+              <div className="rounded-2xl shadow-2xl overflow-hidden bg-white w-full max-w-md mx-auto">
+                <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
+                  <button
+                    onClick={() => setShowCalendar(false)}
+                    className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-navy transition">
+                    <ArrowRight className="size-4 rotate-180" /> Change Service
+                  </button>
+                  <div className="flex items-center gap-2 text-sm font-semibold text-navy">
+                    <Calendar className="size-4 text-ade-blue" />
+                    <span>Book Now</span>
                   </div>
-                ))}
+                </div>
+                <iframe
+                  src={calendarUrl}
+                  id={GHL_CALENDAR_ID}
+                  className="w-full"
+                  style={{ border: "none", overflow: "hidden", minHeight: "620px" }}
+                  scrolling="no"
+                />
               </div>
-            </div>
+            ) : (
+              <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-auto">
+                <div className="flex items-center gap-3 mb-5 pb-4 border-b border-gray-100">
+                  <div className="size-10 rounded-xl bg-ade-blue/10 flex items-center justify-center">
+                    <Calendar className="size-5 text-ade-blue" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-navy text-sm">Get My Estimate</p>
+                    <p className="text-xs text-muted-foreground">Air Duct Experts</p>
+                  </div>
+                </div>
+
+                <p className="text-xs font-semibold text-navy/60 uppercase tracking-wider mb-3">Select Service(s)</p>
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  {ESTIMATE_SERVICES.map((s) => {
+                    const Icon = s.icon;
+                    const active = selected.includes(s.key);
+                    return (
+                      <button key={s.key} onClick={() => toggle(s.key, selected, setSelected)}
+                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition text-left ${
+                          active
+                            ? "border-ade-blue bg-ade-blue/10 text-ade-blue"
+                            : "border-gray-200 text-navy hover:border-ade-blue/50 hover:bg-ade-blue/5"
+                        }`}>
+                        <Icon className="size-4 shrink-0" />
+                        <span className="leading-tight">{s.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <p className="text-xs font-semibold text-navy/60 uppercase tracking-wider mb-3">Add-Ons</p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {ADD_ONS.map((a) => {
+                    const active = addOns.includes(a.key);
+                    return (
+                      <button key={a.key} onClick={() => toggle(a.key, addOns, setAddOns)}
+                        className={`px-3 py-1.5 rounded-full border text-xs font-medium transition ${
+                          active ? "border-ade-blue bg-ade-blue/10 text-ade-blue" : "border-gray-200 text-navy/70 hover:border-ade-blue/50"
+                        }`}>
+                        {a.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <label className="block text-xs font-semibold text-navy/60 uppercase tracking-wider mb-2">Home ZIP Code</label>
+                <input
+                  value={zip}
+                  onChange={(e) => setZip(e.target.value)}
+                  placeholder="e.g. 22191"
+                  maxLength={5}
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm mb-5 focus:outline-none focus:border-ade-blue"
+                />
+
+                <div className="flex flex-col gap-2.5">
+                  <button
+                    onClick={() => setShowCalendar(true)}
+                    className="w-full bg-ade-blue hover:opacity-90 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition shadow-blue">
+                    <Calendar className="size-4" /> See Available Times
+                    <ArrowRight className="size-4" />
+                  </button>
+                  <a href={smsHref}
+                    className="w-full border border-gray-200 hover:border-ade-blue text-navy font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition">
+                    <MessageSquare className="size-4" /> Text Instead
+                  </a>
+                  <a href={`tel:${PHONE_TEL}`}
+                    className="w-full border border-gray-200 hover:border-ade-blue text-navy font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition">
+                    <Phone className="size-4" /> Call to Book — {PHONE}
+                  </a>
+                  <a href={mailtoHref}
+                    className="w-full text-sm text-muted-foreground hover:text-ade-blue text-center py-1 transition">
+                    <Mail className="size-3.5 inline mr-1" /> Email my details instead
+                  </a>
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  {["Book a real available time slot", "17 Years of Industry Experience", "Residential, DMV-wide"].map((item) => (
+                    <div key={item} className="flex items-center gap-2 text-xs text-navy/60">
+                      <CheckCircle2 className="size-3.5 text-ade-blue shrink-0" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </Reveal>
         </div>
       </div>
