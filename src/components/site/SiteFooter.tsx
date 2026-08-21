@@ -40,6 +40,7 @@ export function SiteFooter() {
         <div>
           <h4 className="text-white font-semibold mb-3 text-sm tracking-wider uppercase">Resources</h4>
           <ul className="space-y-2 text-sm">
+            <li><Link to="/about" className="hover:text-ade-blue transition">About</Link></li>
             <li><Link to="/blog" className="hover:text-ade-blue transition">Blog</Link></li>
             <li><Link to="/faq" className="hover:text-ade-blue transition">FAQ</Link></li>
           </ul>

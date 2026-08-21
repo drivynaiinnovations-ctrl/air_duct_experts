@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
   Phone, Calendar, Clock, Home, Building2, CheckCircle2, ArrowRight, Mail,
-  Wind, Flame, Sparkles, Sofa, ShieldCheck, MapPin, X, AlertTriangle, Award, Youtube,
+  Wind, Flame, Sparkles, Sofa, ShieldCheck, MapPin, X, AlertTriangle, Award, Youtube, MessageSquare,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/site/Reveal";
@@ -255,10 +255,14 @@ const ADD_ONS = [
   { key: "sanitize", label: "HVAC sanitizing / deodorizing" },
 ] as const;
 
+const TIME_WINDOWS = ["Morning (8am–12pm)", "Afternoon (12pm–4pm)", "Evening (4pm–7pm)", "I'm flexible"] as const;
+
 function EstimateWidget() {
   const [selected, setSelected] = useState<string[]>(["hvac"]);
   const [zip, setZip] = useState("");
   const [addOns, setAddOns] = useState<string[]>([]);
+  const [date, setDate] = useState("");
+  const [timeWindow, setTimeWindow] = useState<string>(TIME_WINDOWS[3]);
 
   const toggle = (key: string, list: string[], setList: (v: string[]) => void) => {
     setList(list.includes(key) ? list.filter((k) => k !== key) : [...list, key]);
@@ -270,15 +274,19 @@ function EstimateWidget() {
     return { services, extras };
   }, [selected, addOns]);
 
-  const mailBody = [
+  const requestLines = [
     zip ? `ZIP code: ${zip}` : null,
     summaryLines.services.length ? `Services: ${summaryLines.services.join(", ")}` : null,
     summaryLines.extras.length ? `Add-ons: ${summaryLines.extras.join(", ")}` : null,
-    "",
-    "Please reach out with an estimate. Best time to call: ",
+    date ? `Preferred date: ${date}` : null,
+    `Preferred time: ${timeWindow}`,
   ].filter(Boolean).join("\n");
 
-  const mailtoHref = `mailto:${EMAIL}?subject=${encodeURIComponent("Estimate Request — Air Duct Experts")}&body=${encodeURIComponent(mailBody)}`;
+  const mailBody = [requestLines, "", "Please confirm this appointment request."].join("\n");
+  const mailtoHref = `mailto:${EMAIL}?subject=${encodeURIComponent("Appointment Request — Air Duct Experts")}&body=${encodeURIComponent(mailBody)}`;
+
+  const smsBody = `Hi, I'd like to request an appointment.\n${requestLines}`;
+  const smsHref = `sms:${PHONE_TEL}?body=${encodeURIComponent(smsBody)}`;
 
   return (
     <section id="estimate" className="py-20 bg-ade-blue/5 scroll-mt-16">
@@ -360,12 +368,38 @@ function EstimateWidget() {
                 onChange={(e) => setZip(e.target.value)}
                 placeholder="e.g. 22191"
                 maxLength={5}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm mb-5 focus:outline-none focus:border-ade-blue"
+                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm mb-4 focus:outline-none focus:border-ade-blue"
               />
 
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 uppercase tracking-wider mb-2">Preferred Date</label>
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ade-blue"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 uppercase tracking-wider mb-2">Preferred Time</label>
+                  <select
+                    value={timeWindow}
+                    onChange={(e) => setTimeWindow(e.target.value)}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ade-blue bg-white"
+                  >
+                    {TIME_WINDOWS.map((w) => <option key={w} value={w}>{w}</option>)}
+                  </select>
+                </div>
+              </div>
+
               <div className="flex flex-col gap-2.5">
-                <a href={`tel:${PHONE_TEL}`}
+                <a href={smsHref}
                   className="w-full bg-ade-blue hover:opacity-90 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition shadow-blue">
+                  <MessageSquare className="size-4" /> Text to Request This Appointment
+                </a>
+                <a href={`tel:${PHONE_TEL}`}
+                  className="w-full border border-gray-200 hover:border-ade-blue text-navy font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition">
                   <Phone className="size-4" /> Call to Book — {PHONE}
                 </a>
                 <a href={mailtoHref}
@@ -375,7 +409,7 @@ function EstimateWidget() {
               </div>
 
               <div className="mt-4 space-y-2">
-                {["Estimate — not a final price", "17 Years of Industry Experience", "Residential, DMV-wide"].map((item) => (
+                {["Request — not a guaranteed slot until confirmed", "17 Years of Industry Experience", "Residential, DMV-wide"].map((item) => (
                   <div key={item} className="flex items-center gap-2 text-xs text-navy/60">
                     <CheckCircle2 className="size-3.5 text-ade-blue shrink-0" />
                     <span>{item}</span>

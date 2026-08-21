@@ -412,6 +412,26 @@ function LocationPage() {
           </div>
         </section>
 
+        <section className="py-16 bg-white">
+          <div className="max-w-5xl mx-auto px-5 lg:px-8 text-center">
+            <p className="text-ade-blue text-xs font-semibold tracking-[0.2em] uppercase mb-3">Service Area Map</p>
+            <h2 className="font-display text-2xl md:text-3xl font-semibold text-navy mb-6">
+              Air Duct Experts Coverage Near {loc.name}, VA
+            </h2>
+            <div className="rounded-2xl overflow-hidden border border-border shadow-sm">
+              <iframe
+                title={`Map of ${loc.name}, VA`}
+                src={`https://www.google.com/maps?q=${encodeURIComponent(`${loc.name}, VA`)}&output=embed`}
+                width="100%"
+                height="360"
+                style={{ border: 0 }}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+          </div>
+        </section>
+
         <section className="py-14 bg-ade-blue/5">
           <div className="max-w-5xl mx-auto px-5 lg:px-8 text-center">
             <p className="text-ade-blue text-xs font-semibold tracking-[0.2em] uppercase mb-3">Also Serving Nearby</p>

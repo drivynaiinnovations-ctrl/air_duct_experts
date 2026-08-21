@@ -118,6 +118,7 @@ export function SiteHeader({ bookHref = "/#estimate" }: { bookHref?: string }) {
             </div>
 
             <Link to="/#why" className="hover:text-ade-blue transition">Why ADE</Link>
+            <Link to="/about" className="hover:text-ade-blue transition">About</Link>
             <Link to="/blog" className="hover:text-ade-blue transition">Blog</Link>
             <Link to="/faq" className="hover:text-ade-blue transition">FAQ</Link>
           </nav>
@@ -187,6 +188,7 @@ export function SiteHeader({ bookHref = "/#estimate" }: { bookHref?: string }) {
           )}
 
           <Link to="/#why" onClick={close} className="py-2 hover:text-ade-blue transition">Why ADE</Link>
+          <Link to="/about" onClick={close} className="py-2 hover:text-ade-blue transition">About</Link>
           <Link to="/blog" onClick={close} className="py-2 hover:text-ade-blue transition">Blog</Link>
           <Link to="/faq" onClick={close} className="py-2 hover:text-ade-blue transition">FAQ</Link>
           <a href={`tel:${PHONE.replace(/[^\d+]/g, "")}`} onClick={close} className="py-2 hover:text-ade-blue transition">{PHONE}</a>
