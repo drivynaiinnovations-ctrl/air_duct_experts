@@ -368,7 +368,7 @@ function ServicePage() {
           </Reveal>
 
           <Reveal delay={100}>
-            <div className="bg-secondary/40 rounded-2xl p-7 border border-border">
+            <div className="bg-ade-blue/5 rounded-2xl p-7 border border-border">
               <p className="text-xs font-semibold text-navy/60 uppercase tracking-wider mb-4">What's Included</p>
               <ul className="space-y-3">
                 {svc.offers.map((o) => (
@@ -384,7 +384,7 @@ function ServicePage() {
       </section>
 
       {/* Warning Signs */}
-      <section className="py-20 bg-secondary/40">
+      <section className="py-20 bg-ade-blue/5">
         <div className="max-w-7xl mx-auto px-5 lg:px-8">
           <Reveal>
             <div className="text-center max-w-2xl mx-auto mb-12">
@@ -426,7 +426,7 @@ function ServicePage() {
           <div className="grid md:grid-cols-4 gap-6">
             {svc.process.map((s, i) => (
               <Reveal key={s.n} delay={i * 100}>
-                <div className="text-center bg-secondary/40 rounded-2xl p-7 border border-border">
+                <div className="text-center bg-ade-blue/5 rounded-2xl p-7 border border-border">
                   <div className="size-16 mx-auto rounded-full bg-white border-2 border-ade-blue flex items-center justify-center font-display text-xl font-bold text-ade-blue mb-4 shadow-sm">
                     {s.n}
                   </div>
@@ -499,7 +499,7 @@ function ServicePage() {
 
       {/* Related Guides */}
       {relatedPosts.length > 0 && (
-        <section className="py-16 bg-secondary/40">
+        <section className="py-16 bg-ade-blue/5">
           <div className="max-w-6xl mx-auto px-5 lg:px-8">
             <p className="text-ade-blue text-xs font-semibold tracking-[0.2em] uppercase mb-3 text-center">Learn More</p>
             <h2 className="font-display text-2xl md:text-3xl font-semibold text-navy mb-8 text-center">Related Guides</h2>
@@ -524,7 +524,7 @@ function ServicePage() {
       )}
 
       {/* Local Service Area */}
-      <section className="py-16 bg-secondary/40">
+      <section className="py-16 bg-ade-blue/5">
         <div className="max-w-7xl mx-auto px-5 lg:px-8 text-center">
           <Reveal>
             <p className="text-ade-blue text-xs font-semibold tracking-[0.2em] uppercase mb-3">Service Area</p>
@@ -546,8 +546,8 @@ function ServicePage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 bg-navy relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-ade-blue/10 via-transparent to-transparent" />
+      <section className="py-20 bg-navy-soft relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-ade-blue/20 via-ade-blue/5 to-transparent" />
         <div className="relative max-w-3xl mx-auto px-5 lg:px-8 text-center">
           <Reveal>
             <h2 className="font-display text-4xl md:text-5xl font-semibold text-white mb-4 leading-tight">

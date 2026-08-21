@@ -347,7 +347,7 @@ function LocationPage() {
               </h2>
               <p className="text-muted-foreground leading-relaxed">{loc.intro}</p>
             </div>
-            <div className="bg-secondary/40 rounded-2xl p-6 space-y-3">
+            <div className="bg-ade-blue/5 rounded-2xl p-6 space-y-3">
               <h3 className="font-semibold text-navy mb-4">Services Available in {loc.name}</h3>
               {[
                 "Complete HVAC System & Air Duct Cleaning",
@@ -398,7 +398,7 @@ function LocationPage() {
                 <div key={i} className="border border-border rounded-xl overflow-hidden">
                   <button
                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    className="w-full flex items-center justify-between px-5 py-4 text-left font-medium text-navy hover:bg-secondary/40 transition"
+                    className="w-full flex items-center justify-between px-5 py-4 text-left font-medium text-navy hover:bg-ade-blue/5 transition"
                   >
                     <span>{item.q}</span>
                     <ChevronDown className={`size-4 text-ade-blue shrink-0 transition-transform ml-3 ${openFaq === i ? "rotate-180" : ""}`} />
@@ -412,7 +412,7 @@ function LocationPage() {
           </div>
         </section>
 
-        <section className="py-14 bg-secondary/40">
+        <section className="py-14 bg-ade-blue/5">
           <div className="max-w-5xl mx-auto px-5 lg:px-8 text-center">
             <p className="text-ade-blue text-xs font-semibold tracking-[0.2em] uppercase mb-3">Also Serving Nearby</p>
             <h2 className="font-display text-2xl font-semibold text-navy mb-6">Neighboring Communities</h2>
@@ -426,7 +426,7 @@ function LocationPage() {
           </div>
         </section>
 
-        <section className="py-20 bg-navy text-white text-center px-5">
+        <section className="py-20 bg-navy-soft text-white text-center px-5">
           <div className="max-w-2xl mx-auto">
             <h2 className="font-display text-4xl font-semibold mb-4">
               Need Duct Cleaning in {loc.name}?

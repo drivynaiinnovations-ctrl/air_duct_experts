@@ -281,7 +281,7 @@ function EstimateWidget() {
   const mailtoHref = `mailto:${EMAIL}?subject=${encodeURIComponent("Estimate Request — Air Duct Experts")}&body=${encodeURIComponent(mailBody)}`;
 
   return (
-    <section id="estimate" className="py-20 bg-secondary/40 scroll-mt-16">
+    <section id="estimate" className="py-20 bg-ade-blue/5 scroll-mt-16">
       <div className="max-w-7xl mx-auto px-5 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <Reveal>
@@ -463,7 +463,7 @@ function Services() {
     { icon: ShieldCheck, title: "Indoor Air Quality", slug: "indoor-air-quality", href: "/services/indoor-air-quality", body: "HVAC sanitizing, antimicrobial treatment and deodorizing where applicable." },
   ];
   return (
-    <section id="services" className="py-24 bg-secondary/40 scroll-mt-16">
+    <section id="services" className="py-24 bg-ade-blue/5 scroll-mt-16">
       <div className="max-w-7xl mx-auto px-5 lg:px-8">
         <SectionHeader kicker="What We Do" title="Home Cleaning Services, Done Thoroughly"
           sub="Professional, local, transparent — every service comes with a clear explanation of what's included." />
@@ -551,7 +551,7 @@ function YouTubeSection() {
     "Dryer Vent Fire Risks, Explained",
   ];
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-ade-blue/5">
       <div className="max-w-7xl mx-auto px-5 lg:px-8">
         <SectionHeader kicker="See It Yourself" title="Watch Our Videos"
           sub="Real technician, real equipment, real homes — no polished corporate ads. Our video library is in production; here's what's coming." />
@@ -583,7 +583,7 @@ function YouTubeSection() {
 
 function ReviewsComingSoon() {
   return (
-    <section className="py-24 bg-secondary/40">
+    <section className="py-24 bg-ade-blue/5">
       <div className="max-w-3xl mx-auto px-5 lg:px-8 text-center">
         <Reveal>
           <p className="text-ade-blue text-xs font-semibold tracking-[0.2em] uppercase mb-3">Google Reviews</p>
@@ -623,8 +623,8 @@ function ServiceArea() {
 
 function FinalCTA() {
   return (
-    <section id="book" className="bg-navy py-24 relative overflow-hidden scroll-mt-16">
-      <div className="absolute inset-0 bg-gradient-to-br from-ade-blue/10 via-transparent to-transparent" />
+    <section id="book" className="bg-navy-soft py-24 relative overflow-hidden scroll-mt-16">
+      <div className="absolute inset-0 bg-gradient-to-br from-ade-blue/20 via-ade-blue/5 to-transparent" />
       <div className="relative max-w-4xl mx-auto px-5 lg:px-8 text-center">
         <Reveal>
           <h2 className="font-display text-4xl md:text-6xl font-semibold text-white mb-5 leading-tight">
