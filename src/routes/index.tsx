@@ -2,13 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
   Phone, Calendar, Clock, Home, Building2, CheckCircle2, ArrowRight, Mail,
-  Wind, Flame, Sparkles, Sofa, ShieldCheck, MapPin, X, AlertTriangle, Camera, Award,
+  Wind, Flame, Sparkles, Sofa, ShieldCheck, MapPin, X, AlertTriangle, Award, Youtube,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/site/Reveal";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { HeroSlider } from "@/components/site/HeroSlider";
+import { BeforeAfterSlider } from "@/components/site/BeforeAfterSlider";
 import { SERVICE_ACCENT, accentIconBg, accentText, accentHoverBorder, type ServiceAccent } from "@/lib/serviceAccent";
 import { BLOG_POSTS } from "@/lib/blogPosts";
 
@@ -93,6 +94,7 @@ function Index() {
       <Services />
       <HowItWorks />
       <BeforeAfter />
+      <YouTubeSection />
       <FromTheBlog />
       <ReviewsComingSoon />
       <ServiceArea />
@@ -519,6 +521,7 @@ function HowItWorks() {
 }
 
 function BeforeAfter() {
+  const jobs = ["Air Duct Cleaning", "Dryer Vent Cleaning", "Carpet Cleaning"];
   return (
     <section className="py-24 bg-navy">
       <div className="max-w-7xl mx-auto px-5 lg:px-8 text-center">
@@ -526,17 +529,53 @@ function BeforeAfter() {
           <p className="text-ade-blue text-xs font-semibold tracking-[0.2em] uppercase mb-3">Before &amp; After</p>
           <h2 className="font-display text-4xl md:text-5xl font-semibold text-white mb-5">See the Difference We Make</h2>
           <p className="text-white/70 max-w-2xl mx-auto leading-relaxed mb-10">
-            We're documenting real before-and-after photos and video from every job across the DMV. Check back soon to see actual duct interiors, real equipment and real results — no stock photography.
+            Drag the slider — these are placeholders until real job photos are ready, but this is exactly how each comparison will work once they are.
           </p>
         </Reveal>
-        <div className="grid sm:grid-cols-3 gap-5 max-w-3xl mx-auto">
-          {["Before", "During", "After"].map((label) => (
-            <div key={label} className="aspect-square rounded-2xl border border-white/15 bg-white/5 flex flex-col items-center justify-center gap-3">
-              <Camera className="size-8 text-white/30" />
-              <span className="text-white/40 text-sm font-medium">{label} photo coming soon</span>
-            </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {jobs.map((job, i) => (
+            <Reveal key={job} delay={i * 80}>
+              <BeforeAfterSlider title={job} />
+            </Reveal>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+function YouTubeSection() {
+  const videos = [
+    "What's Really Behind Your Vent Cover",
+    "A Real Duct Cleaning, Start to Finish",
+    "Dryer Vent Fire Risks, Explained",
+  ];
+  return (
+    <section className="py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-5 lg:px-8">
+        <SectionHeader kicker="See It Yourself" title="Watch Our Videos"
+          sub="Real technician, real equipment, real homes — no polished corporate ads. Our video library is in production; here's what's coming." />
+        <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          {videos.map((title, i) => (
+            <Reveal key={title} delay={i * 80}>
+              <div className="rounded-2xl overflow-hidden border border-border bg-secondary/40">
+                <div className="aspect-video bg-navy flex items-center justify-center">
+                  <div className="size-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                    <Youtube className="size-6 text-white/60" />
+                  </div>
+                </div>
+                <p className="p-4 text-sm font-medium text-navy">{title}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+        <Reveal>
+          <div className="text-center mt-10">
+            <span className="inline-flex items-center gap-2 text-sm font-medium text-navy/60 bg-secondary/60 border border-border rounded-full px-5 py-2.5">
+              <Clock className="size-4 text-ade-blue" /> YouTube channel launching soon
+            </span>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
