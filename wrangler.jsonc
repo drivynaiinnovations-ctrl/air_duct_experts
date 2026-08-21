@@ -9,4 +9,5 @@
     { "pattern": "getairductexperts.com/*", "zone_name": "getairductexperts.com" },
     { "pattern": "www.getairductexperts.com/*", "zone_name": "getairductexperts.com" }
   ],
+  "send_email": [{ "name": "EMAIL" }],
 }

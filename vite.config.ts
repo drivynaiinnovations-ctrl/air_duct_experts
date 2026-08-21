@@ -12,4 +12,15 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
+  vite: {
+    build: {
+      rollupOptions: {
+        // TanStack Start's server-fn code-splitting resolves this file's imports
+        // for the client bundle too (before stripping the server-only handler),
+        // and @cloudflare/vite-plugin's cloudflare:* externalization doesn't
+        // reach that pass — so it needs to be listed explicitly here.
+        external: ["cloudflare:workers"],
+      },
+    },
+  },
 });

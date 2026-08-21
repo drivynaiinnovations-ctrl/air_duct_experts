@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Mail, MessageSquare, Copy, Check } from "lucide-react";
+import { Mail, Copy, Check, Loader2, AlertCircle } from "lucide-react";
 import { Logo } from "@/components/site/Logo";
-import { HOME_SIZE_TIERS, ADD_ON_OPTIONS, type HomeSizeTier } from "@/lib/pricing";
+import { HOME_SIZE_TIERS, ADD_ON_OPTIONS, HVAC_SERVICE_INCLUDES, type HomeSizeTier } from "@/lib/pricing";
+import { sendQuoteEmail } from "@/lib/sendQuoteEmail";
 
 export const Route = createFileRoute("/team")({
   component: TeamQuoteBuilder,
@@ -25,6 +26,8 @@ function TeamQuoteBuilder() {
   const [customAmounts, setCustomAmounts] = useState<Record<string, string>>({});
   const [showSpecial, setShowSpecial] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [sendState, setSendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [sendError, setSendError] = useState("");
 
   const selectedTier = HOME_SIZE_TIERS.find((t) => t.key === tier)!;
   const isCustomTier = selectedTier.list === null;
@@ -34,15 +37,20 @@ function TeamQuoteBuilder() {
   };
 
   const lineItems = useMemo(() => {
-    const items: { label: string; list: number | null; special: number | null; custom?: boolean }[] = [];
-    items.push({ label: `Complete HVAC / Air Duct Cleaning — ${selectedTier.label}`, list: selectedTier.list, special: selectedTier.special });
+    const items: { label: string; list: number | null; special: number | null; includes: string[]; custom?: boolean }[] = [];
+    items.push({
+      label: `Complete HVAC / Air Duct Cleaning — ${selectedTier.label}`,
+      list: selectedTier.list,
+      special: selectedTier.special,
+      includes: HVAC_SERVICE_INCLUDES,
+    });
     for (const key of addOns) {
       const opt = ADD_ON_OPTIONS.find((a) => a.key === key)!;
       if (opt.list !== null) {
-        items.push({ label: opt.label, list: opt.list, special: opt.special });
+        items.push({ label: opt.label, list: opt.list, special: opt.special, includes: opt.includes });
       } else {
         const amt = Number(customAmounts[key] || 0);
-        items.push({ label: `${opt.label} (custom)`, list: amt, special: amt, custom: true });
+        items.push({ label: `${opt.label} (custom)`, list: amt, special: amt, includes: opt.includes, custom: true });
       }
     }
     return items;
@@ -53,12 +61,16 @@ function TeamQuoteBuilder() {
   const activeTotal = showSpecial ? specialTotal : fullTotal;
 
   const quoteText = useMemo(() => {
+    const serviceLines = lineItems.flatMap((it) => [
+      `• ${it.label} — ${money(showSpecial ? (it.special ?? 0) : (it.list ?? 0))}`,
+      ...it.includes.map((inc) => `    - ${inc}`),
+    ]);
     const lines = [
       `Air Duct Experts — Quote for ${name || "[Customer Name]"}`,
       "",
       ...(isCustomTier
         ? ["Home size: X-Large / Multi-System — requires an on-site assessment before pricing. We'll reach out to schedule a walkthrough."]
-        : lineItems.map((it) => `• ${it.label} — ${money(showSpecial ? (it.special ?? 0) : (it.list ?? 0))}`)),
+        : serviceLines),
       ...(isCustomTier ? [] : ["", `Total: ${money(activeTotal)}${showSpecial ? " (special offer price)" : ""}`]),
       "",
       "This is an estimate. A technician confirms the exact scope on arrival, and any additional work is explained and approved by you first.",
@@ -68,13 +80,31 @@ function TeamQuoteBuilder() {
     return lines.join("\n");
   }, [name, lineItems, activeTotal, showSpecial, isCustomTier]);
 
-  const mailtoHref = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent("Your Air Duct Experts Quote")}&body=${encodeURIComponent(quoteText)}`;
-  const smsHref = `sms:${phone.replace(/[^\d+]/g, "")}?body=${encodeURIComponent(quoteText)}`;
-
   const copyQuote = async () => {
     await navigator.clipboard.writeText(quoteText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const sendEmail = async () => {
+    if (!email) return;
+    setSendState("sending");
+    setSendError("");
+    try {
+      await sendQuoteEmail({
+        data: {
+          to: email,
+          customerName: name,
+          subject: "Your Air Duct Experts Quote",
+          text: quoteText,
+        },
+      });
+      setSendState("sent");
+      setTimeout(() => setSendState("idle"), 4000);
+    } catch (err) {
+      setSendState("error");
+      setSendError(err instanceof Error ? err.message : "Something went wrong sending this email.");
+    }
   };
 
   return (
@@ -158,11 +188,18 @@ function TeamQuoteBuilder() {
               <p className="text-sm text-white/80">X-Large / multi-system homes need a walkthrough before we can quote a price. Schedule an on-site visit with the customer.</p>
             ) : (
               <>
-                <ul className="space-y-1.5 mb-4">
+                <ul className="space-y-3 mb-4">
                   {lineItems.map((it) => (
-                    <li key={it.label} className="flex justify-between text-sm text-white/85">
-                      <span>{it.label}</span>
-                      <span>{money(showSpecial ? (it.special ?? 0) : (it.list ?? 0))}</span>
+                    <li key={it.label}>
+                      <div className="flex justify-between text-sm text-white/90 font-medium">
+                        <span>{it.label}</span>
+                        <span>{money(showSpecial ? (it.special ?? 0) : (it.list ?? 0))}</span>
+                      </div>
+                      <ul className="mt-1 space-y-0.5">
+                        {it.includes.map((inc) => (
+                          <li key={inc} className="text-xs text-white/55 pl-3">– {inc}</li>
+                        ))}
+                      </ul>
                     </li>
                   ))}
                 </ul>
@@ -174,24 +211,30 @@ function TeamQuoteBuilder() {
             )}
           </div>
 
-          <div className="flex flex-wrap gap-2.5">
-            <a href={mailtoHref} className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition ${email ? "bg-ade-blue text-white hover:opacity-90" : "bg-gray-100 text-gray-400 pointer-events-none"}`}>
-              <Mail className="size-4" /> Email Quote
-            </a>
-            <a href={smsHref} className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition ${phone ? "border-ade-blue text-navy hover:bg-ade-blue/5" : "border-gray-200 text-gray-400 pointer-events-none"}`}>
-              <MessageSquare className="size-4" /> Text Quote
-            </a>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              onClick={sendEmail}
+              disabled={!email || sendState === "sending"}
+              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition ${
+                email ? "bg-ade-blue text-white hover:opacity-90" : "bg-gray-100 text-gray-400 pointer-events-none"
+              }`}>
+              {sendState === "sending" ? <Loader2 className="size-4 animate-spin" /> : <Mail className="size-4" />}
+              {sendState === "sending" ? "Sending…" : sendState === "sent" ? "Sent!" : "Email Quote"}
+            </button>
             <button onClick={copyQuote} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-gray-200 text-navy hover:bg-secondary transition">
               {copied ? <Check className="size-4 text-green-600" /> : <Copy className="size-4" />}
               {copied ? "Copied" : "Copy Quote Text"}
             </button>
           </div>
+          {sendState === "error" && (
+            <p className="mt-3 flex items-start gap-2 text-sm text-red-600">
+              <AlertCircle className="size-4 shrink-0 mt-0.5" /> {sendError}
+            </p>
+          )}
+          {!email && (
+            <p className="mt-3 text-xs text-muted-foreground">Enter a customer email above to send.</p>
+          )}
         </div>
-
-        <details className="bg-white rounded-2xl border border-border p-5 text-sm text-muted-foreground">
-          <summary className="cursor-pointer font-semibold text-navy">Preview raw quote text</summary>
-          <pre className="whitespace-pre-wrap mt-3 text-xs">{quoteText}</pre>
-        </details>
       </div>
     </div>
   );

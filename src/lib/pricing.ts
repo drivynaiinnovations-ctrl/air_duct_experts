@@ -25,16 +25,51 @@ export const HOME_SIZE_TIERS: HomeSizeOption[] = [
   { key: "xlarge", label: "X-Large / Multi-System", ventRange: "30+ vents or 2 systems — Marcus assesses on-site", list: null, special: null },
 ];
 
+// Same scope regardless of home size — only the vent count and price change.
+export const HVAC_SERVICE_INCLUDES = [
+  "Supply ducts & return ducts",
+  "Registers and grilles",
+  "Main trunk lines",
+  "Blower compartment & motor",
+  "Evaporator coil",
+  "Air handler / furnace cabinet",
+];
+
 export interface AddOnOption {
   key: string;
   label: string;
   list: number | null; // null = enter custom amount at time of quote
   special: number | null;
+  includes: string[];
 }
 
 export const ADD_ON_OPTIONS: AddOnOption[] = [
-  { key: "dryer-vent", label: "Dryer Vent Cleaning", list: 229, special: 195 },
-  { key: "carpet", label: "Carpet Cleaning", list: null, special: null },
-  { key: "upholstery", label: "Upholstery Cleaning", list: null, special: null },
-  { key: "sanitizing", label: "HVAC Sanitizing / Deodorizing", list: null, special: null },
+  {
+    key: "dryer-vent",
+    label: "Dryer Vent Cleaning",
+    list: 229,
+    special: 195,
+    includes: ["Full-length lint removal", "Exterior vent hood cleaning & flap check", "Inspection for crushed or disconnected sections"],
+  },
+  {
+    key: "carpet",
+    label: "Carpet Cleaning",
+    list: null,
+    special: null,
+    includes: ["Pre-treatment of stains & high-traffic areas", "Whole-home, by-room, or stairs — as scoped"],
+  },
+  {
+    key: "upholstery",
+    label: "Upholstery Cleaning",
+    list: null,
+    special: null,
+    includes: ["Fabric-appropriate cleaning method", "Spot & stain treatment"],
+  },
+  {
+    key: "sanitizing",
+    label: "HVAC Sanitizing / Deodorizing",
+    list: null,
+    special: null,
+    includes: ["Antimicrobial treatment where applicable", "Deodorizing treatment"],
+  },
 ];
